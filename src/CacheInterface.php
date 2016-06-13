@@ -4,7 +4,7 @@
  * @author: "Paul Dragoonis" <dragoonis@github>
  * @url: https://github.com/dragoonis/psr-simplecache
  *
- *  Temporary package that will be replaced with PHP-FIG's SimpleCache Proposal when accepted.
+ *  Temporary package that will be replaced with PHP-FIG's SimpleCache when the proposal accepted.
  */
 
 namespace Soupmix\Cache;
