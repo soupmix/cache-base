@@ -1,0 +1,23 @@
+{
+    "name": "soupmix/cache-base",
+    "type": "library",
+    "description": "Framework agnostic Simple Cache Interface.",
+    "keywords": ["cache", "adapters", "simplecache", "interface"],
+    "homepage": "https://github.com/soupmix/cache-base",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Paul Dragoonis",
+            "email": "dragoonis@php.net",
+            "homepage": "http://www.ppi.io"
+        }
+    ],
+    "require": {
+        "php": ">=5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Soupmix\\Cache\\CacheInterface": "src/"
+        }
+    }
+}
