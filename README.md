@@ -65,7 +65,7 @@ $cache->get('my_key);
 // returns  string(8) "my_value"
 ```
 
-#### 4. Delete an item from the cache by its unique key
+### 4. Delete an item from the cache by its unique key
 
 ```
 $cache->delete($key);
@@ -81,7 +81,7 @@ $cache->delete('my_key);
 // returns bool(true)
 ```
 
-#### 5. Persisting a set of key => value pairs in the cache, with an optional TTL.
+### 5. Persisting a set of key => value pairs in the cache, with an optional TTL.
 
 ```
 $cache->setMultiple(array $items);
@@ -99,7 +99,7 @@ $cache->setMultiple($items);
 // returns bool(true)
 ```
 
-#### 6. Obtain multiple cache items by their unique keys.
+### 6. Obtain multiple cache items by their unique keys.
 
 ```
 $cache->getMultiple($keys);
@@ -122,7 +122,7 @@ returns array(2) {
 */
 ```
 
-#### 7. Delete multiple cache items in a single operation.
+### 7. Delete multiple cache items in a single operation.
 
 ```
 $cache->deleteMultiple($keys);
@@ -145,7 +145,7 @@ $cache->deleteMultiple($keys);
  */
 ```
 
-#### 8. Increment a value atomically in the cache by its step value, which defaults to 1.
+### 8. Increment a value atomically in the cache by its step value, which defaults to 1.
 ```
 $cache->increment($key, $step);
 ```
@@ -162,7 +162,7 @@ $cache->increment('counter', 1);
 // returns int(2)
 ```
 
-##### Important Note:
+#### Important Note:
 
 Memcached does not increments the keys that's not been set before. For Memcached you must set key with the default value.
 
@@ -174,7 +174,7 @@ $cache->increment('counter', 1);
 ```
 
     
-#### 9. Decrement a value atomically in the cache by its step value, which defaults to 1
+### 9. Decrement a value atomically in the cache by its step value, which defaults to 1
 
 ```
 $cache->decrement($key, $step);
@@ -190,7 +190,7 @@ $cache->decrement('counter', 1);
 // returns int(0)
 ```
 
-##### Important Note 1:
+#### Important Note 1:
 
 Memcached does not decrements the keys that's not been set before. For Memcached you must set key with the default value.
 
@@ -201,11 +201,11 @@ $cache->decrement('counter', 1);
 // returns int(0)
 ```
 
-##### Important Note 2:
+#### Important Note 2:
 
 Memcached does not decrements to negative values and stops at zero where Redis can decrement to negative values and goes setting -1,-2, etc...
     
-#### 10. Wipe clean the entire cache's keys (Flush)
+### 10. Wipe clean the entire cache's keys (Flush)
 
 @return bool True on success and false on failure
 
