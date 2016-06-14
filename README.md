@@ -211,5 +211,5 @@ Memcached does not decrements to negative values and stops at zero where Redis c
 
 ```
 $cache->clear();
-returns bool(true)
+// returns bool(true)
 ```
