@@ -2,13 +2,23 @@
 
 Soupmix Cache provides framework agnostic cache interface. 
 
-### 1. Connect to server
+### 1. Install and Connect to Service
+
+It's recommended that you use [Composer](https://getcomposer.org/) to install Soupmix Cache Adaptors.
+
 
 #### 1.1 Redis
+
+##### Installation
+```bash
+$ composer require soupmix/cache-redis "~0.1"
+```
 
 ##### Connect to Redis (single instance) service 
 
 ```
+require_once '/path/to/composer/vendor/autoload.php';
+
 $rConfig = [];
 $rConfig['host'] = "127.0.0.1";
 $rConfig['dbIndex'] = 1;
@@ -16,12 +26,17 @@ $cache = new Soupmix\Cache\RedisCache($rConfig);
 ```
 
 
-
 #### 1.2 Memcached
 
+##### Installation
+```bash
+$ composer require soupmix/cache-memcached "~0.1"
+```
 ##### Connect to Memcached service
 
 ```
+require_once '/path/to/composer/vendor/autoload.php';
+
 $config = [];
 $config['bucket'] = 'test';
 $config['hosts'] = ['127.0.0.1'];
