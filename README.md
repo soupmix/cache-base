@@ -44,6 +44,20 @@ $cache = new Soupmix\Cache\MemcachedCache($config);
 ```
 
 
+#### 1.3 APCu
+
+##### Installation
+```bash
+$ composer require soupmix/cache-apcu "~0.1"
+```
+##### Usage
+
+```
+require_once '/path/to/composer/vendor/autoload.php';
+
+$cache = new Soupmix\Cache\APCUCache();
+```
+
 ### 2. Persist data in the cache, uniquely referenced by a key with an optional expiration TTL time.
 
 ```
