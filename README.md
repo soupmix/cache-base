@@ -94,7 +94,7 @@ $cache->set('my_key, 'my_value', TTL_DAY);
 // returns bool(true)
 ```
 
-### 3. Check whether the key is exists
+### 3. Determines whether an item is present in the cache.
 
 ```php
 $cache->has($key);
