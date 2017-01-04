@@ -1,6 +1,6 @@
 ## Soupmix Cache API
 
-Soupmix Cache provides framework agnostic cache interface. 
+Soupmix Cache provides framework agnostic implementation of [PSR-16 Simple Cache Interface](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-16-simple-cache.md). 
 
 ### 1. Install and Connect to Service
 
@@ -11,18 +11,21 @@ It's recommended that you use [Composer](https://getcomposer.org/) to install So
 
 ##### Installation
 ```bash
-$ composer require soupmix/cache-redis "~0.1"
+$ composer require soupmix/cache-redis "~0.3"
 ```
 
 ##### Connect to Redis (single instance) service 
 
-```
+```php
 require_once '/path/to/composer/vendor/autoload.php';
 
-$rConfig = [];
-$rConfig['host'] = "127.0.0.1";
-$rConfig['dbIndex'] = 1;
-$cache = new Soupmix\Cache\RedisCache($rConfig);
+$rConfig = ['host'=> "127.0.0.1"];
+$handler = new Redis();
+$handler->connect(
+    $rConfig['host']
+);
+
+$cache = new Soupmix\Cache\RedisCache($handler);
 ```
 
 
@@ -30,16 +33,28 @@ $cache = new Soupmix\Cache\RedisCache($rConfig);
 
 ##### Installation
 ```bash
-$ composer require soupmix/cache-memcached "~0.1"
+$ composer require soupmix/cache-memcached "~0.3"
 ```
 ##### Connect to Memcached service
 
-```
+```php
 require_once '/path/to/composer/vendor/autoload.php';
 
-$config = [];
-$config['bucket'] = 'test';
-$config['hosts'] = ['127.0.0.1'];
+$config = [
+    'bucket' => 'test',
+    'hosts'   => ['127.0.0.1'],
+;
+$handler = new Memcached($config['bucket']);
+$handler->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
+$handler->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
+if (!count($handler->getServerList())) {
+    $hosts = [];
+    foreach ($config['hosts'] as $host) {
+        $hosts[] = [$host, 11211];
+    }
+    $handler->addServers($hosts);
+}
+
 $cache = new Soupmix\Cache\MemcachedCache($config);
 ```
 
@@ -48,11 +63,11 @@ $cache = new Soupmix\Cache\MemcachedCache($config);
 
 ##### Installation
 ```bash
-$ composer require soupmix/cache-apcu "~0.1"
+$ composer require soupmix/cache-apcu "~0.2"
 ```
 ##### Usage
 
-```
+```php
 require_once '/path/to/composer/vendor/autoload.php';
 
 $cache = new Soupmix\Cache\APCUCache();
@@ -60,7 +75,7 @@ $cache = new Soupmix\Cache\APCUCache();
 
 ### 2. Persist data in the cache, uniquely referenced by a key with an optional expiration TTL time.
 
-```
+```php
 $cache->set($key, $value, $ttl);
 ```
 
@@ -73,30 +88,46 @@ $cache->set($key, $value, $ttl);
 @return bool True on success and false on failure
 
 
-```
+```php
 $cache->set('my_key, 'my_value', TTL_DAY);
 
 // returns bool(true)
 ```
 
-### 3. Fetch a value from the cache.
+### 3. Check whether the key is exists
 
+```php
+$cache->has($key);
 ```
-$cache->get($key);
+
+**@param string $key**: The unique cache key of the item to delete
+
+@return bool True on success and false on failure
+
+```php
+$cache->has('my_key');
+
+// returns bool(true)
+```
+
+### 4. Fetch a value from the cache.
+
+```php
+$cache->get($key, default=null);
 ```
 
 **@param string $key**: The unique key of this item in the cache
 @return mixed The value of the item from the cache, or null in case of cache miss
 
-```
-$cache->get('my_key);
+```php
+$cache->get('my_key');
 
 // returns  string(8) "my_value"
 ```
 
-### 4. Delete an item from the cache by its unique key
+### 5. Delete an item from the cache by its unique key
 
-```
+```php
 $cache->delete($key);
 ```
 
@@ -104,15 +135,15 @@ $cache->delete($key);
 
 @return bool True on success and false on failure
 
-```
-$cache->delete('my_key);
+```php
+$cache->delete('my_key');
 
 // returns bool(true)
 ```
 
-### 5. Persisting a set of key => value pairs in the cache, with an optional TTL.
+### 6. Persisting a set of key => value pairs in the cache, with an optional TTL.
 
-```
+```php
 $cache->setMultiple(array $items);
 ```
 
@@ -121,24 +152,25 @@ $cache->setMultiple(array $items);
 **@param null|integer|DateInterval $ttl**: Optional. The amount of seconds from the current time that the item will exist in the cache for. If this is null then the cache backend will fall back to its own default behaviour.
 
 @return bool True on success and false on failure
-```
+
+```php
 $items = ['my_key_1'=>'my_value_1', 'my_key_2'=>'my_value_2'];
 $cache->setMultiple($items);
 
 // returns bool(true)
 ```
 
-### 6. Obtain multiple cache items by their unique keys.
+### 7. Obtain multiple cache items by their unique keys.
 
-```
-$cache->getMultiple($keys);
+```php
+$cache->getMultiple($keys, $default=null);
 ```
 
 **@param array|Traversable $keys**: A list of keys that can obtained in a single operation.
 
 @return array An array of key => value pairs. Cache keys that do not exist or are stale will have a value of null.
 
-```
+```php
 $keys = ['my_key_1', 'my_key_2'];
 $cache->getMultiple($keys);
 /*
@@ -151,9 +183,9 @@ returns array(2) {
 */
 ```
 
-### 7. Delete multiple cache items in a single operation.
+### 8. Delete multiple cache items in a single operation.
 
-```
+```php
 $cache->deleteMultiple($keys);
 ```
 
@@ -161,7 +193,7 @@ $cache->deleteMultiple($keys);
 
 @return bool True on success and false on failure
 
-```
+```php
 $keys = ['my_key_1', 'my_key_2'];
 $cache->deleteMultiple($keys);
  /*
@@ -174,8 +206,8 @@ $cache->deleteMultiple($keys);
  */
 ```
 
-### 8. Increment a value atomically in the cache by its step value, which defaults to 1.
-```
+### 9. Increment a value atomically in the cache by its step value, which defaults to 1.
+```php
 $cache->increment($key, $step);
 ```
 **@param string  $key**: The cache item key
@@ -184,7 +216,7 @@ $cache->increment($key, $step);
 
 @return int|bool The new value on success and false on failure
 
-```
+```php
 $cache->increment('counter', 1);
 // returns int(1)
 $cache->increment('counter', 1);
@@ -195,7 +227,7 @@ $cache->increment('counter', 1);
 
 Memcached does not increments the keys that's not been set before. For Memcached you must set key with the default value.
 
-```
+```php
 $cache->set('counter', 0);
 // returns bool(true)
 $cache->increment('counter', 1);
@@ -203,16 +235,16 @@ $cache->increment('counter', 1);
 ```
 
     
-### 9. Decrement a value atomically in the cache by its step value, which defaults to 1
+### 10. Decrement a value atomically in the cache by its step value, which defaults to 1
 
-```
+```php
 $cache->decrement($key, $step);
 ```
 
 **@param string  $key**:  The cache item key
 
 **@param integer $step**: The value to decrement by, defaulting to 1
-```
+```php
 $cache->decrement('counter', 1);
 // returns int(1)
 $cache->decrement('counter', 1);
@@ -223,7 +255,7 @@ $cache->decrement('counter', 1);
 
 Memcached does not decrements the keys that's not been set before. For Memcached you must set key with the default value.
 
-```
+```php
 $cache->set('counter', 1);
 // returns bool(true)
 $cache->decrement('counter', 1);
@@ -234,11 +266,11 @@ $cache->decrement('counter', 1);
 
 Memcached does not decrements to negative values and stops at zero where Redis can decrement to negative values and goes setting -1,-2, etc...
     
-### 10. Wipe clean the entire cache's keys (Flush)
+### 11. Wipe clean the entire cache's keys (Flush)
 
 @return bool True on success and false on failure
 
-```
+```php
 $cache->clear();
 // returns bool(true)
 ```
